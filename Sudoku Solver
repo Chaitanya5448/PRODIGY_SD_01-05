@@ -1,0 +1,108 @@
+public class SudokuSolver {
+
+    public static void main(String[] args) {
+        int[][] puzzle = {
+            {5, 3, 0, 0, 7, 0, 0, 0, 0},
+            {6, 0, 0, 1, 9, 5, 0, 0, 0},
+            {0, 9, 8, 0, 0, 0, 0, 6, 0},
+            {8, 0, 0, 0, 6, 0, 0, 0, 3},
+            {4, 0, 0, 8, 0, 3, 0, 0, 1},
+            {7, 0, 0, 0, 2, 0, 0, 0, 6},
+            {0, 6, 0, 0, 0, 0, 2, 8, 0},
+            {0, 0, 0, 4, 1, 9, 0, 0, 5},
+            {0, 0, 0, 0, 8, 0, 0, 7, 9}
+        };
+
+        if (solveSudoku(puzzle)) {
+            System.out.println("Sudoku solved:");
+            printSudoku(puzzle);
+        } else {
+            System.out.println("No solution exists.");
+        }
+    }
+
+    // Function to solve the Sudoku puzzle using backtracking
+    public static boolean solveSudoku(int[][] puzzle) {
+        int[] emptyCell = findEmptyCell(puzzle);
+        
+        if (emptyCell == null) {
+            // No empty cells, puzzle is solved
+            return true;
+        }
+        
+        int row = emptyCell[0];
+        int col = emptyCell[1];
+        
+        for (int num = 1; num <= 9; num++) {
+            if (isValid(puzzle, row, col, num)) {
+                puzzle[row][col] = num;
+                
+                if (solveSudoku(puzzle)) {
+                    return true; // If a solution is found, return true
+                }
+                
+                // If no solution found with this num, backtrack
+                puzzle[row][col] = 0;
+            }
+        }
+        
+        return false; // No solution found for this cell
+    }
+
+    // Function to find an empty cell in the puzzle
+    public static int[] findEmptyCell(int[][] puzzle) {
+        int[] cell = new int[2];
+        
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                if (puzzle[row][col] == 0) {
+                    cell[0] = row;
+                    cell[1] = col;
+                    return cell;
+                }
+            }
+        }
+        
+        return null; // No empty cell found
+    }
+
+    // Function to check if a number is valid in a cell
+    public static boolean isValid(int[][] puzzle, int row, int col, int num) {
+        // Check row
+        for (int i = 0; i < 9; i++) {
+            if (puzzle[row][i] == num) {
+                return false;
+            }
+        }
+        
+        // Check column
+        for (int i = 0; i < 9; i++) {
+            if (puzzle[i][col] == num) {
+                return false;
+            }
+        }
+        
+        // Check 3x3 box
+        int boxRow = row - row % 3;
+        int boxCol = col - col % 3;
+        for (int i = boxRow; i < boxRow + 3; i++) {
+            for (int j = boxCol; j < boxCol + 3; j++) {
+                if (puzzle[i][j] == num) {
+                    return false;
+                }
+            }
+        }
+        
+        return true; // Number is valid in this cell
+    }
+
+    // Function to print the Sudoku grid
+    public static void printSudoku(int[][] puzzle) {
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                System.out.print(puzzle[row][col] + " ");
+            }
+            System.out.println();
+        }
+    }
+}
